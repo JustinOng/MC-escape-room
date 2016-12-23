@@ -1,3 +1,7 @@
+#include "Keypad.h"
+#include "MFRC522.h"
+#include <LiquidCrystal.h>
+
 /*
  * === Config for LCD ===
  */

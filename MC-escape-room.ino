@@ -1,7 +1,3 @@
-#include "libraries/Keypad/Keypad.h"
-#include "libraries/rfid/MFRC522.h"
-#include <LiquidCrystal.h>
-
 #include "MC-escape-room.h"
 
 MFRC522 *mfrc522 = new MFRC522(4, 4);
