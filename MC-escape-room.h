@@ -33,6 +33,6 @@ char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
  * === Config for MFRC522
  */
 #define UID_LENGTH 4
-#define MFRC522_NUM 2
+#define MFRC522_NUM 4
 
-byte mfrc522_ss_pins[MFRC522_NUM] = {4, 5};
+byte mfrc522_ss_pins[] = {4, 5, 6, 7};
