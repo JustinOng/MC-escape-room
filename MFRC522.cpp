@@ -201,7 +201,7 @@ void MFRC522::PCD_Init() {
 	pinMode(_chipSelectPin, OUTPUT);
 	digitalWrite(_chipSelectPin, HIGH);
 	
-	// Set the resetPowerDownPin as digital output, do not reset or power down.
+	/*// Set the resetPowerDownPin as digital output, do not reset or power down.
 	pinMode(_resetPowerDownPin, OUTPUT);
 	
 	if (digitalRead(_resetPowerDownPin) == LOW) {	//The MFRC522 chip is in power down mode.
@@ -211,7 +211,9 @@ void MFRC522::PCD_Init() {
 	}
 	else { // Perform a soft reset
 		PCD_Reset();
-	}
+	}*/
+  
+  PCD_Reset();
 	
 	// When communicating with a PICC we need a timeout if something goes wrong.
 	// f_timer = 13.56 MHz / (2*TPreScaler+1) where TPreScaler = [TPrescaler_Hi:TPrescaler_Lo].
