@@ -45,34 +45,99 @@ void setup(void) {
   Serial.begin(115200);
   Serial.println("Setup finished!");
 }
+
+char code[MAX_CODE_LENGTH];
+byte code_length = 0;
+
+byte is_code_correct(void) {
+  if (code_length != CORRECT_CODE_LENGTH) return 0;
+
+  for(byte i = 0; i < code_length; i++) {
+    if (code[i] != correct_code[i]) return 0;
+  }
+
+  return 1;
+}
+
 void loop(void) {
-  static unsigned long last_update = 0;
+  /* 
+   * state = 0 for keypad entry
+   * state = 1 for rfid card sequence
+  */
+  static byte state = 0;
   
-  byte UID[UID_LENGTH];
+  //static unsigned long last_update = 0;
+  
+  //byte UID[UID_LENGTH];
   char key = keypad.getKey();
+  
+  // re-enable SPI mode. long story short, the use of pin 10 (SS) as one of the keypad pins
+  // sets the SPI bus to SLAVE mode when the keypad is scanned.
+  SPCR |= (1<<MSTR);
 
-  if (key != NO_KEY){
-    lcd.setCursor(9, 0);
-    lcd.print(key);
-  }
-
-  if (millis() - last_update > 100) {
-    for(byte i = 0; i < MFRC522_NUM; i++) {
-      reset_ss_pins();
-      if (mfrc522[i]->PICC_IsNewCardPresent() && mfrc522[i]->PICC_ReadCardSerial()) {
-        Serial.print("Found card on reader ");
-        Serial.println(i);
-        memcpy(UID, mfrc522[i]->uid.uidByte, 4);
-        print_uid(UID, 0, i);
-        //mfrc522[i]->PICC_HaltA();
+  if (state == 0) {
+    lcd.setCursor(0, 1);
+    lcd.print("*: Back, #:Check");
+    lcd.setCursor(0, 0);
+    lcd.print("Enter Code: ");
+    
+    if (key) {
+      if (key >= '0' && key <= '9') {
+        if (code_length < MAX_CODE_LENGTH) {
+          code[code_length++] = key;
+        }
       }
-      else {
-        lcd.setCursor(0, i);
-        lcd.print("        ");
-      }
-    } 
 
-    last_update = millis();
+      if (key == '*') {
+        if (code_length > 0) {
+          code_length--;
+        }
+      }
+
+      for(byte i = 0; i < MAX_CODE_LENGTH; i++) {
+        if (i < code_length) {
+          lcd.print(code[i]);
+        }
+        else {
+          lcd.print(' ');
+        }
+      }
+      
+      if (key == '#') {
+        lcd.setCursor(0, 1);
+        
+        if (is_code_correct()) {
+          lcd.print("Correct!         ");
+          state = 1;
+        }
+        else {
+          lcd.print("Wrong Code!      ");
+        }
+        
+        delay(1000);
+      }
+    }
   }
+  else if (state == 1) {
+    lcd.setCursor(0, 0);
+    lcd.print("   What's the   ");
+    lcd.setCursor(0, 1);
+    lcd.print("    pattern?    ");
+  }
+  
+  /*for(byte i = 0; i < MFRC522_NUM; i++) {
+    reset_ss_pins();
+    if (mfrc522[i]->PICC_IsNewCardPresent() && mfrc522[i]->PICC_ReadCardSerial()) {
+      Serial.print("Found card on reader ");
+      Serial.println(i);
+      memcpy(UID, mfrc522[i]->uid.uidByte, 4);
+      print_uid(UID, 0, i);
+      mfrc522[i]->PICC_HaltA();
+    }
+    else {
+      lcd.setCursor(0, i);
+      lcd.print("        ");
+    }
+  }*/
 }
 
