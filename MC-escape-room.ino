@@ -31,7 +31,7 @@ void setup(void) {
     // reset pin is not really used by the library, putting the ss pin makes it function yet saves a pin
     mfrc522[i] = new MFRC522(mfrc522_ss_pins[i], mfrc522_ss_pins[i]);
     mfrc522[i]->PCD_Init();
-    mfrc522[i]->PCD_SetAntennaGain(mfrc522[i]->RxGain_max);
+    mfrc522[i]->PCD_SetAntennaGain(mfrc522[i]->RxGain_avg);
   }
   
   // Prepare the key (used both as key A and as key B)
