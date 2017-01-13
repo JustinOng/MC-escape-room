@@ -1,26 +1,19 @@
 #include "Keypad.h"
 #include "MFRC522.h"
-#include <LiquidCrystal.h>
+#include <LiquidCrystal_I2C.h>
 
 /*
  * === Config for LCD ===
  */
-#define LCD_RS 2
-// LCD_RW is hardwired to ground
-#define LCD_EN 3
-#define LCD_D4 4
-#define LCD_D5 5
-#define LCD_D6 6
-#define LCD_D7 7
-
+#define LCD_ADDR 0x27
 /*
  *  === Config for Keypad ===
  */
 #define KEYPAD_ROWS 4
 #define KEYPAD_COLS 3
 
-byte keypad_row_pins[KEYPAD_ROWS] = {14, 15, 16, 17}; //connect to the row pinouts of the keypad
-byte keypad_col_pins[KEYPAD_COLS] = {8, 9, 10}; //connect to the column pinouts of the keypad
+byte keypad_row_pins[KEYPAD_ROWS] = {2, 3, 4, 5}; //connect to the row pinouts of the keypad
+byte keypad_col_pins[KEYPAD_COLS] = {8, 7, 6}; //connect to the column pinouts of the keypad
 
 char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
   {'1','2','3'},
@@ -33,9 +26,9 @@ char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
  * === Config for MFRC522 ===
  */
 #define UID_LENGTH 4
-#define MFRC522_NUM 3
+#define MFRC522_NUM 6
 
-byte mfrc522_ss_pins[] = {4, 6, 7};
+byte mfrc522_ss_pins[] = {9, 10, 14, 15, 16, 17};
 
 // For memory structure of the mifare classic 1kb cards,
 // http://www.nxp.com/documents/application_note/AN1304.pdf

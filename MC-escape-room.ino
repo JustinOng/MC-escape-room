@@ -3,7 +3,7 @@
 MFRC522 mfrc522[MFRC522_NUM];
 Keypad keypad = Keypad( makeKeymap(keys), keypad_row_pins, keypad_col_pins, KEYPAD_ROWS, KEYPAD_COLS );
 
-LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
+LiquidCrystal_I2C lcd(LCD_ADDR, 16, 2);
 
 MFRC522::MIFARE_Key key;
 
@@ -40,7 +40,7 @@ byte read_rfid_reader(byte i, byte * data) {
   byte buffer[18];
   byte size = sizeof(buffer);
   
-  reset_ss_pins();
+  //reset_ss_pins();
 
   if (!mfrc522[i].PICC_IsNewCardPresent() || !mfrc522[i].PICC_ReadCardSerial()) {
     return 1;
@@ -125,7 +125,7 @@ void setup(void) {
       key.keyByte[i] = 0xFF;
   }
   
-  lcd.begin(16, 2);
+  lcd.begin();
 
   //Serial.begin(115200);
   Serial.println("Setup finished!");
@@ -270,7 +270,7 @@ void loop(void) {
       lcd.print("Congratulations!");
     }
 
-    if ((keypad.findInList('*') > -1) && (keypad.findInList('#') > -1)) {
+    if (key == '#') {
       state_to_set = 0;
     }
   }
