@@ -153,6 +153,7 @@ byte is_code_correct(void) {
 }
 
 void loop(void) {
+  static byte are_readers_sleeping = 0;
   /* 
    * state = 0 for keypad entry
    * state = 1 for rfid card sequence
@@ -179,6 +180,31 @@ void loop(void) {
   }
   else if (key) {
     debug_sequence_count = 0;
+  }
+
+  // if current state needs rfid readers and the readers are asleep
+  if (are_readers_sleeping && (state == 1 || state == 100)) {
+    //wake up readers
+    swSerial.println("Waking up readers...");
+    for(byte i = 0; i < MFRC522_NUMk i++) {
+      // clear PowerDown to wake up readers
+      mfrc522[i].PCD_ClearRegisterBitMask(CommandReg, 1<<4);
+    }
+
+    delay(50);
+
+    are_readers_sleeping = 0;
+  }
+  else if (!are_readers_sleeping) {
+    // if readers are not needed and they're not sleeping then make them sleep
+    swSerial.println("Putting readers to sleep...");
+
+    for(byte i = 0; i < MFRC522_NUMk i++) {
+      // set PowerDown to sleep
+      mfrc522[i].PCD_SetRegisterBitMask(CommandReg, 1<<4);
+    }
+    
+    are_readers_sleeping = 1;
   }
 
   if (state == 0) {
