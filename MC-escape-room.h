@@ -1,5 +1,6 @@
 #include "Keypad.h"
 #include "MFRC522.h"
+#include "SendOnlySoftwareSerial.h"
 #include <LiquidCrystal_I2C.h>
 
 /*
@@ -72,3 +73,4 @@ char correct_code[CORRECT_CODE_LENGTH] = {'1', '2', '3'};
 
 #define DEBUG_SEQUENCE_LENGTH 8
 char debug_sequence[DEBUG_SEQUENCE_LENGTH] = {'2', '2', '8', '8', '4', '6', '4', '6'};
+

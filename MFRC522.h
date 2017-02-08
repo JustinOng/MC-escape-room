@@ -2,7 +2,7 @@
  * MFRC522.h - Library to use ARDUINO RFID MODULE KIT 13.56 MHZ WITH TAGS SPI W AND R BY COOQROBOT.
  * Based on code Dr.Leong   ( WWW.B2CQSHOP.COM )
  * Created by Miguel Balboa (circuitito.com), Jan, 2012.
- * Rewritten by Søren Thing Andersen (access.thing.dk), fall of 2013 (Translation to English, refactored, comments, anti collision, cascade levels.)
+ * Rewritten by SÃ¸ren Thing Andersen (access.thing.dk), fall of 2013 (Translation to English, refactored, comments, anti collision, cascade levels.)
  * Extended by Tom Clement with functionality to write to sector 0 of UID changeable Mifare cards.
  * Released into the public domain.
  * 
@@ -20,7 +20,7 @@
  * The card reader and the tags communicate using a 13.56MHz electromagnetic field.
  * The protocol is defined in ISO/IEC 14443-3 Identification cards -- Contactless integrated circuit cards -- Proximity cards -- Part 3: Initialization and anticollision".
  * A free version of the final draft can be found at http://wg8.de/wg8n1496_17n3613_Ballot_FCD14443-3.pdf
- * Details are found in chapter 6, Type A – Initialization and anticollision.
+ * Details are found in chapter 6, Type A â€“ Initialization and anticollision.
  * 
  * If only the PICC UID is wanted, the above documents has all the needed information.
  * To read and write from MIFARE PICCs, the MIFARE protocol is used after the PICC has been selected.
@@ -416,3 +416,4 @@ private:
 };
 
 #endif
+

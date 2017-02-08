@@ -7,6 +7,8 @@ LiquidCrystal_I2C lcd(LCD_ADDR, 16, 2);
 
 MFRC522::MIFARE_Key key;
 
+SendOnlySoftwareSerial swSerial(1);
+
 void print_uid(byte *uid, int column, int row) {
   lcd.setCursor(column, row);
   for(byte i = 0; i < UID_LENGTH; i++) {
@@ -39,8 +41,8 @@ byte read_rfid_reader(byte i, byte * data) {
   // authenticate with key A, default keys (configured in setup)
   status = (MFRC522::StatusCode) mfrc522[i].PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, DATA_TRAILER_BLOCK, &key, &(mfrc522[i].uid));
   if (status != MFRC522::STATUS_OK) {
-    Serial.print(F("PCD_Authenticate() failed: "));
-    Serial.println(mfrc522[i].GetStatusCodeName(status));
+    swSerial.print(F("PCD_Authenticate() failed: "));
+    swSerial.println(mfrc522[i].GetStatusCodeName(status));
     return 3;
   }
   
@@ -48,8 +50,8 @@ byte read_rfid_reader(byte i, byte * data) {
   mfrc522[i].PCD_StopCrypto1();
   
   if (status != MFRC522::STATUS_OK) {
-    Serial.print(F("MIFARE_Read() failed: "));
-    Serial.println(mfrc522[i].GetStatusCodeName(status));
+    swSerial.print(F("MIFARE_Read() failed: "));
+    swSerial.println(mfrc522[i].GetStatusCodeName(status));
     
     return 3;
   }
@@ -80,8 +82,8 @@ byte write_rfid_reader(byte i) {
   // authenticate with key A, default keys (configured in setup)
   status = (MFRC522::StatusCode) mfrc522[i].PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, DATA_TRAILER_BLOCK, &key, &(mfrc522[i].uid));
   if (status != MFRC522::STATUS_OK) {
-    Serial.print(F("PCD_Authenticate() failed: "));
-    Serial.println(mfrc522[i].GetStatusCodeName(status));
+    swSerial.print(F("PCD_Authenticate() failed: "));
+    swSerial.println(mfrc522[i].GetStatusCodeName(status));
     return 2;
   }
 
@@ -89,8 +91,8 @@ byte write_rfid_reader(byte i) {
   mfrc522[i].PCD_StopCrypto1();
   
   if (status != MFRC522::STATUS_OK) {
-    Serial.print(F("MIFARE_Write() failed: "));
-    Serial.println(mfrc522[i].GetStatusCodeName(status));
+    swSerial.print(F("MIFARE_Write() failed: "));
+    swSerial.println(mfrc522[i].GetStatusCodeName(status));
     return 2;
   }
 
@@ -115,8 +117,8 @@ void setup(void) {
   
   lcd.begin();
 
-  //Serial.begin(115200);
-  Serial.println("Setup finished!");
+  swSerial.begin(115200);
+  swSerial.println("Setup finished!");
 }
 
 byte is_reader_right(byte i) {
@@ -275,7 +277,7 @@ void loop(void) {
       lcd.print("DEBUG");
       lcd.setCursor(0, 1);
       lcd.print("Readers: ");
-      Serial.println("Entering debug mode");
+      swSerial.println("Entering debug mode");
     }
 
     if (key >= '0' && key <= '2') state_to_set = key - '0';
@@ -329,6 +331,9 @@ void loop(void) {
       }
     }
   }
+  else if (state == 101) {
+    
+  }
 
   pState = state;
 
@@ -336,4 +341,5 @@ void loop(void) {
     state = state_to_set;
   }
 }
+
 
