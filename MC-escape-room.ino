@@ -186,9 +186,9 @@ void loop(void) {
   if (are_readers_sleeping && (state == 1 || state == 100)) {
     //wake up readers
     swSerial.println("Waking up readers...");
-    for(byte i = 0; i < MFRC522_NUMk i++) {
+    for(byte i = 0; i < MFRC522_NUM; i++) {
       // clear PowerDown to wake up readers
-      mfrc522[i].PCD_ClearRegisterBitMask(CommandReg, 1<<4);
+      mfrc522[i].PCD_ClearRegisterBitMask(MFRC522::CommandReg, 1<<4);
     }
 
     delay(50);
@@ -199,9 +199,9 @@ void loop(void) {
     // if readers are not needed and they're not sleeping then make them sleep
     swSerial.println("Putting readers to sleep...");
 
-    for(byte i = 0; i < MFRC522_NUMk i++) {
+    for(byte i = 0; i < MFRC522_NUM; i++) {
       // set PowerDown to sleep
-      mfrc522[i].PCD_SetRegisterBitMask(CommandReg, 1<<4);
+      mfrc522[i].PCD_SetRegisterBitMask(MFRC522::CommandReg, 1<<4);
     }
     
     are_readers_sleeping = 1;
