@@ -14,16 +14,6 @@ void print_uid(byte *uid, int column, int row) {
   }
 }
 
-void reset_ss_pins(void) {
-  pinMode(10, OUTPUT);
-  digitalWrite(10, HIGH);
-  pinMode(MOSI, OUTPUT);
-  pinMode(SCK, OUTPUT);
-  for (byte i = 0; i < MFRC522_NUM; i++) {
-    digitalWrite(mfrc522_ss_pins[i], HIGH);
-  }
-}
-
 byte read_rfid_reader(byte i, byte * data) {
   /* 
    *  reads rfid reader with index i
@@ -82,8 +72,6 @@ byte write_rfid_reader(byte i) {
 
   dataBlock[DATA_SIGNATURE_INDEX] = DATA_SIGNATURE;
   dataBlock[DATA_INDEX] = i+1;
-  
-  reset_ss_pins();
 
   if (!mfrc522[i].PICC_IsNewCardPresent() || !mfrc522[i].PICC_ReadCardSerial()) {
     return 1;
