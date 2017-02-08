@@ -2,6 +2,7 @@
 #include "MFRC522.h"
 #include "SendOnlySoftwareSerial.h"
 #include <LiquidCrystal_I2C.h>
+#include <EEPROM.h>
 
 /*
  * === Config for LCD ===
@@ -65,6 +66,7 @@ byte mfrc522_ss_pins[] = {9, 10, 14, 15, 16, 17};
 
 #define MAX_CODE_LENGTH 4
 #define CORRECT_CODE_LENGTH 3
+#define CODE_EEPROM_ADDRESS 10
 char correct_code[CORRECT_CODE_LENGTH] = {'1', '2', '3'};
 
 /*

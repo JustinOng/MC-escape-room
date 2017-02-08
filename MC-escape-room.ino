@@ -146,7 +146,7 @@ byte is_code_correct(void) {
   if (code_length != CORRECT_CODE_LENGTH) return 0;
 
   for(byte i = 0; i < code_length; i++) {
-    if (code[i] != correct_code[i]) return 0;
+    if (code[i] != EEPROM.read(CODE_EEPROM_ADDRESS+i)) return 0;
   }
 
   return 1;
@@ -183,7 +183,7 @@ void loop(void) {
   }
 
   // if current state needs rfid readers and the readers are asleep
-  if (are_readers_sleeping && (state == 1 || state == 100)) {
+  if (are_readers_sleeping && (state == 1 || state == 102)) {
     //wake up readers
     swSerial.println("Waking up readers...");
     for(byte i = 0; i < MFRC522_NUM; i++) {
@@ -286,23 +286,95 @@ void loop(void) {
       state_to_set = 0;
     }
   }
-  else if (state == 100) {
-    static unsigned long last_state_update[MFRC522_NUM] = {0};
-    static byte last_read_state[MFRC522_NUM] = {0};
-
-    // index tracking which reader was last read
-    // used to read only one reader per cycle so buttons remain responsive
-    static byte read_index = 255;
-    
+  else if (state == 100) {    
     if (pState != 100) {
       lcd.clear();
       lcd.print("DEBUG");
       lcd.setCursor(0, 1);
-      lcd.print("Readers: ");
+      lcd.print("1:Code 2:Cards");
       swSerial.println("Entering debug mode");
     }
 
-    if (key >= '0' && key <= '2') state_to_set = key - '0';
+    if (key == '1') {
+      state_to_set = 101;
+    }
+    else if (key == '2') {
+      state_to_set = 102;
+    }
+    else if (key == '*') {
+      state_to_set = 0;
+    }
+  }
+  else if (state == 101) {    
+    if (pState != 101) {
+      lcd.clear();
+      lcd.print("Cur code:");
+      for(byte i = 0; i < CORRECT_CODE_LENGTH; i++) {
+        if (i < CORRECT_CODE_LENGTH) {
+          lcd.print(EEPROM.read(CODE_EEPROM_ADDRESS+i) - '0');
+        }
+      }
+      
+      lcd.setCursor(0, 1);
+      lcd.print("New code:");
+      code_length = 0;
+    }
+    
+    if (key >= '0' && key <= '9') {
+      if (code_length < CORRECT_CODE_LENGTH) {
+        code[code_length++] = key;
+      }
+    }
+    else if (key == '*') {
+      if (code_length > 0) {
+        code_length--;
+      }
+      else {
+        state_to_set = 100;
+      }
+    }
+    else if (key == '#') {
+      if (code_length == CORRECT_CODE_LENGTH) {
+        lcd.setCursor(9, 0);
+        for(byte i = 0; i < CORRECT_CODE_LENGTH; i++) {
+          lcd.print(code[i]);
+          EEPROM.write(CODE_EEPROM_ADDRESS+i, code[i]);
+        }
+        
+        lcd.setCursor(0, 1);
+        lcd.print("Code changed");
+        delay(1000);
+        lcd.setCursor(0, 1);
+        lcd.print("New code:");
+        code_length = 0;
+      }
+    }
+  
+    lcd.setCursor(9, 1);
+    
+    for(byte i = 0; i < CORRECT_CODE_LENGTH; i++) {
+      if (i < code_length) {
+        lcd.print(code[i]);
+      }
+      else {
+        lcd.print(' ');
+      }
+    }
+  }
+  else if (state == 102) {
+    static unsigned long last_state_update[MFRC522_NUM] = {0};
+    static byte last_read_state[MFRC522_NUM] = {0};
+    
+    if (pState != 102) {
+      lcd.clear();
+      lcd.print("Reader states:");
+      lcd.setCursor(0, 1);
+      lcd.print("Readers: ");
+    }
+
+    // index tracking which reader was last read
+    // used to read only one reader per cycle so buttons remain responsive
+    static byte read_index = 255;
 
     read_index++;
     
@@ -345,16 +417,13 @@ void loop(void) {
     }
 
     if (key == '*') {
-      state_to_set = 0;
+      state_to_set = 100;
     }
     else if (key == '#') {
       for(byte i = 0; i < MFRC522_NUM; i++) {
         write_rfid_reader(i);
       }
     }
-  }
-  else if (state == 101) {
-    
   }
 
   pState = state;
