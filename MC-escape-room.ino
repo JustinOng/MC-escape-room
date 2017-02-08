@@ -180,10 +180,6 @@ void loop(void) {
   else if (key) {
     debug_sequence_count = 0;
   }
-  
-  // re-enable SPI mode. long story short, the use of pin 10 (SS) as one of the keypad pins
-  // sets the SPI bus to SLAVE mode when the keypad is scanned.
-  SPCR |= (1<<MSTR);
 
   if (state == 0) {
     if (pState != 0) {
