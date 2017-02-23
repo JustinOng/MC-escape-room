@@ -9,6 +9,8 @@ MFRC522::MIFARE_Key key;
 
 SendOnlySoftwareSerial swSerial(1);
 
+CRGB leds[NUM_LEDS];
+
 void print_uid(byte *uid, int column, int row) {
   lcd.setCursor(column, row);
   for(byte i = 0; i < UID_LENGTH; i++) {
@@ -100,6 +102,7 @@ byte write_rfid_reader(byte i) {
 }
 
 void setup(void) {
+  lcd.begin();
   SPI.begin();
   delay(50);
 
@@ -115,7 +118,7 @@ void setup(void) {
       key.keyByte[i] = 0xFF;
   }
   
-  lcd.begin();
+  FastLED.addLeds<WS2812B, LED_DATA_PIN, GRB>(leds, NUM_LEDS);
 
   swSerial.begin(115200);
   swSerial.println("Setup finished!");
@@ -181,7 +184,7 @@ void loop(void) {
   else if (key) {
     debug_sequence_count = 0;
   }
-
+/*
   // if current state needs rfid readers and the readers are asleep
   if (are_readers_sleeping && (state == 1 || state == 102)) {
     //wake up readers
@@ -205,6 +208,21 @@ void loop(void) {
     }
     
     are_readers_sleeping = 1;
+  }*/
+
+  if (state == 2) {
+    for(byte i = 0; i < NUM_LEDS; i++) {
+      leds[i] = COLOR_WIN;
+    }
+
+    FastLED.show();
+  }
+  else {
+    for(byte i = 0; i < NUM_LEDS; i++) {
+      leds[i] = COLOR_NOWIN;
+    }
+
+    FastLED.show();
   }
 
   if (state == 0) {
@@ -289,9 +307,9 @@ void loop(void) {
   else if (state == 100) {    
     if (pState != 100) {
       lcd.clear();
-      lcd.print("DEBUG");
+      lcd.print("DEBUG 1:Code");
       lcd.setCursor(0, 1);
-      lcd.print("1:Code 2:Cards");
+      lcd.print("2:Cards 3:Jump");
       swSerial.println("Entering debug mode");
     }
 
@@ -300,6 +318,9 @@ void loop(void) {
     }
     else if (key == '2') {
       state_to_set = 102;
+    }
+    else if (key == '3') {
+      state_to_set = 103;
     }
     else if (key == '*') {
       state_to_set = 0;
@@ -311,7 +332,7 @@ void loop(void) {
       lcd.print("Cur code:");
       for(byte i = 0; i < CORRECT_CODE_LENGTH; i++) {
         if (i < CORRECT_CODE_LENGTH) {
-          lcd.print(EEPROM.read(CODE_EEPROM_ADDRESS+i) - '0');
+          lcd.write(EEPROM.read(CODE_EEPROM_ADDRESS+i));
         }
       }
       
@@ -423,6 +444,21 @@ void loop(void) {
       for(byte i = 0; i < MFRC522_NUM; i++) {
         write_rfid_reader(i);
       }
+    }
+  }
+  else if (state == 103) {
+    if (pState != 103) {
+      lcd.clear();
+      lcd.print("JUMP-0: Code");
+      lcd.setCursor(0, 1);
+      lcd.print("1: Cards 2: Win");
+    }
+
+    if (key == '*') {
+      state_to_set = 100;
+    }
+    else if (key >= '0' && key <= '2') {
+      state_to_set = key - 0x30;
     }
   }
 

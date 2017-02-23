@@ -3,11 +3,20 @@
 #include "SendOnlySoftwareSerial.h"
 #include <LiquidCrystal_I2C.h>
 #include <EEPROM.h>
+#include "FastLED.h"
+
+/*
+ * === Config for LEDs ===
+ */
+#define LED_DATA_PIN 0
+#define NUM_LEDS 6
+#define COLOR_NOWIN CRGB::Black;
+#define COLOR_WIN CRGB::Green;
 
 /*
  * === Config for LCD ===
  */
-#define LCD_ADDR 0x27
+#define LCD_ADDR 0x4E
 /*
  *  === Config for Keypad ===
  */
