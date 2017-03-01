@@ -16,15 +16,15 @@
 /*
  * === Config for LCD ===
  */
-#define LCD_ADDR 0x4E
+#define LCD_ADDR 0x3F
 /*
  *  === Config for Keypad ===
  */
 #define KEYPAD_ROWS 4
 #define KEYPAD_COLS 3
 
-byte keypad_row_pins[KEYPAD_ROWS] = {2, 3, 4, 5}; //connect to the row pinouts of the keypad
-byte keypad_col_pins[KEYPAD_COLS] = {8, 7, 6}; //connect to the column pinouts of the keypad
+byte keypad_row_pins[KEYPAD_ROWS] = {8, 7, 6, 5}; //connect to the row pinouts of the keypad
+byte keypad_col_pins[KEYPAD_COLS] = {4, 3, 2}; //connect to the column pinouts of the keypad
 
 char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
   {'1','2','3'},
