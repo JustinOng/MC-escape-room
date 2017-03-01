@@ -118,7 +118,8 @@ void setup(void) {
       key.keyByte[i] = 0xFF;
   }
   
-  FastLED.addLeds<WS2812B, LED_DATA_PIN, GRB>(leds, NUM_LEDS);
+  //FastLED.addLeds<WS2812B, LED_DATA_PIN, GRB>(leds, NUM_LEDS);
+  pinMode(LED_DATA_PIN, OUTPUT);
 
   swSerial.begin(115200);
   swSerial.println("Setup finished!");
@@ -210,7 +211,7 @@ void loop(void) {
     are_readers_sleeping = 1;
   }*/
 
-  if (state == 2) {
+  /*if (state == 2) {
     for(byte i = 0; i < NUM_LEDS; i++) {
       leds[i] = COLOR_WIN;
     }
@@ -223,7 +224,9 @@ void loop(void) {
     }
 
     FastLED.show();
-  }
+  }*/
+
+  digitalWrite(LED_DATA_PIN, state == 2);
 
   if (state == 0) {
     if (pState != 0) {
