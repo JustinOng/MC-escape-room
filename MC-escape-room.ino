@@ -9,7 +9,7 @@ MFRC522::MIFARE_Key key;
 
 SendOnlySoftwareSerial swSerial(1);
 
-CRGB leds[NUM_LEDS];
+//CRGB leds[NUM_LEDS];
 
 void print_uid(byte *uid, int column, int row) {
   lcd.setCursor(column, row);
