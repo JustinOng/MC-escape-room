@@ -3,7 +3,7 @@
 MFRC522 mfrc522[MFRC522_NUM];
 Keypad keypad = Keypad( makeKeymap(keys), keypad_row_pins, keypad_col_pins, KEYPAD_ROWS, KEYPAD_COLS );
 
-LiquidCrystal_I2C lcd(LCD_ADDR, 16, 2);
+LiquidCrystal_I2C * lcd;
 
 MFRC522::MIFARE_Key key;
 
@@ -12,9 +12,9 @@ SendOnlySoftwareSerial swSerial(1);
 CRGB leds[NUM_LEDS];
 
 void print_uid(byte *uid, int column, int row) {
-  lcd.setCursor(column, row);
+  lcd->setCursor(column, row);
   for(byte i = 0; i < UID_LENGTH; i++) {
-    lcd.print(uid[i], HEX);
+    lcd->print(uid[i], HEX);
   }
 }
 
@@ -101,8 +101,29 @@ byte write_rfid_reader(byte i) {
   return 0;
 }
 
+uint8_t find_lcd(void) {  
+  Wire.beginTransmission(LCD_ADDR_1);
+  if (Wire.endTransmission() == 0) {
+    lcd = new LiquidCrystal_I2C(LCD_ADDR_1, 16, 2, LCD_5x8DOTS);
+    return 1;
+  }
+
+  Wire.beginTransmission(LCD_ADDR_2);
+  if (Wire.endTransmission() == 0) {
+    lcd = new LiquidCrystal_I2C(LCD_ADDR_2, 16, 2, LCD_5x8DOTS);
+    return 1;
+  }
+
+  return 0;
+}
+
 void setup(void) {
-  lcd.begin();
+  delay(100);
+  Wire.begin();
+  // loop until we find a i2c device at LCD_ADDR_1 or LCD_ADDR_2
+  while(!find_lcd());
+  
+  lcd->begin();
   SPI.begin();
   delay(50);
 
@@ -230,10 +251,10 @@ void loop(void) {
 
   if (state == 0) {
     if (pState != 0) {
-      lcd.clear();
-      lcd.print("Enter Code: ");
-      lcd.setCursor(0, 1);
-      lcd.print("*: Back, #:Check");
+      lcd->clear();
+      lcd->print("Enter Code: ");
+      lcd->setCursor(0, 1);
+      lcd->print("*: Back, #:Check");
       code_length = 0;
     }
     
@@ -250,40 +271,40 @@ void loop(void) {
         }
       }
     
-      lcd.setCursor(12, 0);
+      lcd->setCursor(12, 0);
       
       for(byte i = 0; i < MAX_CODE_LENGTH; i++) {
         if (i < code_length) {
-          lcd.print(code[i]);
+          lcd->print(code[i]);
         }
         else {
-          lcd.print(' ');
+          lcd->print(' ');
         }
       }
       
       if (key == '#') {
-        lcd.setCursor(0, 1);
+        lcd->setCursor(0, 1);
         
         if (is_code_correct()) {
-          lcd.print("Correct!         ");
+          lcd->print("Correct!         ");
           state_to_set = 1;
         }
         else {
-          lcd.print("Wrong Code!      ");
+          lcd->print("Wrong Code!      ");
         }
         
         delay(1000);
-        lcd.setCursor(0, 1);
-        lcd.print("*: Back, #:Check");
+        lcd->setCursor(0, 1);
+        lcd->print("*: Back, #:Check");
       }
     }
   }
   else if (state == 1) {
     if (pState != 1) {
-      lcd.clear();
-      lcd.print("   What's the   ");
-      lcd.setCursor(0, 1);
-      lcd.print("    pattern?    ");
+      lcd->clear();
+      lcd->print("   What's the   ");
+      lcd->setCursor(0, 1);
+      lcd->print("    pattern?    ");
     }
     
     byte correct = 1;
@@ -299,8 +320,8 @@ void loop(void) {
   }
   else if (state == 2) {
     if (pState != 2) {
-      lcd.clear();
-      lcd.print("Congratulations!");
+      lcd->clear();
+      lcd->print("Congratulations!");
     }
 
     if (key == '#') {
@@ -309,10 +330,10 @@ void loop(void) {
   }
   else if (state == 100) {    
     if (pState != 100) {
-      lcd.clear();
-      lcd.print("DEBUG 1:Code");
-      lcd.setCursor(0, 1);
-      lcd.print("2:Cards 3:Jump");
+      lcd->clear();
+      lcd->print("DEBUG 1:Code");
+      lcd->setCursor(0, 1);
+      lcd->print("2:Cards 3:Jump");
       swSerial.println("Entering debug mode");
     }
 
@@ -331,16 +352,16 @@ void loop(void) {
   }
   else if (state == 101) {    
     if (pState != 101) {
-      lcd.clear();
-      lcd.print("Cur code:");
+      lcd->clear();
+      lcd->print("Cur code:");
       for(byte i = 0; i < CORRECT_CODE_LENGTH; i++) {
         if (i < CORRECT_CODE_LENGTH) {
-          lcd.write(EEPROM.read(CODE_EEPROM_ADDRESS+i));
+          lcd->write(EEPROM.read(CODE_EEPROM_ADDRESS+i));
         }
       }
       
-      lcd.setCursor(0, 1);
-      lcd.print("New code:");
+      lcd->setCursor(0, 1);
+      lcd->print("New code:");
       code_length = 0;
     }
     
@@ -359,29 +380,29 @@ void loop(void) {
     }
     else if (key == '#') {
       if (code_length == CORRECT_CODE_LENGTH) {
-        lcd.setCursor(9, 0);
+        lcd->setCursor(9, 0);
         for(byte i = 0; i < CORRECT_CODE_LENGTH; i++) {
-          lcd.print(code[i]);
+          lcd->print(code[i]);
           EEPROM.write(CODE_EEPROM_ADDRESS+i, code[i]);
         }
         
-        lcd.setCursor(0, 1);
-        lcd.print("Code changed");
+        lcd->setCursor(0, 1);
+        lcd->print("Code changed");
         delay(1000);
-        lcd.setCursor(0, 1);
-        lcd.print("New code:");
+        lcd->setCursor(0, 1);
+        lcd->print("New code:");
         code_length = 0;
       }
     }
   
-    lcd.setCursor(9, 1);
+    lcd->setCursor(9, 1);
     
     for(byte i = 0; i < CORRECT_CODE_LENGTH; i++) {
       if (i < code_length) {
-        lcd.print(code[i]);
+        lcd->print(code[i]);
       }
       else {
-        lcd.print(' ');
+        lcd->print(' ');
       }
     }
   }
@@ -390,10 +411,10 @@ void loop(void) {
     static byte last_read_state[MFRC522_NUM] = {0};
     
     if (pState != 102) {
-      lcd.clear();
-      lcd.print("Reader states:");
-      lcd.setCursor(0, 1);
-      lcd.print("Readers: ");
+      lcd->clear();
+      lcd->print("Reader states:");
+      lcd->setCursor(0, 1);
+      lcd->print("Readers: ");
     }
 
     // index tracking which reader was last read
@@ -418,21 +439,21 @@ void loop(void) {
       last_state_update[read_index] = millis();
     }
     
-    lcd.setCursor(9+read_index, 1);
+    lcd->setCursor(9+read_index, 1);
     switch(result) {
       case 0:
         if (data != 0) {
-          lcd.print(data);
+          lcd->print(data);
         }
         break;
       case 1:
-        lcd.print('?');
+        lcd->print('?');
         break;
       case 2:
-        lcd.print('*');
+        lcd->print('*');
         break;
       case 3:
-        lcd.print('E');
+        lcd->print('E');
         break;
     }
 
@@ -451,10 +472,10 @@ void loop(void) {
   }
   else if (state == 103) {
     if (pState != 103) {
-      lcd.clear();
-      lcd.print("JUMP-0: Code");
-      lcd.setCursor(0, 1);
-      lcd.print("1: Cards 2: Win");
+      lcd->clear();
+      lcd->print("JUMP-0: Code");
+      lcd->setCursor(0, 1);
+      lcd->print("1: Cards 2: Win");
     }
 
     if (key == '*') {

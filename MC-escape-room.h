@@ -4,6 +4,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <EEPROM.h>
 #include "FastLED.h"
+#include <Wire.h>
 
 /*
  * === Config for LEDs ===
@@ -16,7 +17,8 @@
 /*
  * === Config for LCD ===
  */
-#define LCD_ADDR 0x3F
+#define LCD_ADDR_1 0x3F
+#define LCD_ADDR_2 0x27
 /*
  *  === Config for Keypad ===
  */
