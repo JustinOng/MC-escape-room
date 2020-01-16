@@ -132,6 +132,11 @@ bool LiquidCrystal_I2C::begin(uint8_t lcd_colums, uint8_t lcd_rows, lcd_font_siz
   Wire.begin(sda, scl);
   Wire.setClock(100000UL);                            //experimental! ESP8266 i2c bus speed: 100kHz..400kHz/100000UL..400000UL, default 100000UL
   Wire.setClockStretchLimit(230);                     //experimental! default 230
+#elif defined (ESP32)
+bool LiquidCrystal_I2C::begin(uint8_t lcd_colums, uint8_t lcd_rows, lcd_font_size f_size, uint8_t sda, uint8_t scl)
+{
+  Wire.begin(sda, scl);
+  Wire.setClock(100000UL);                            //experimental! ESP8266 i2c bus speed: 100kHz..400kHz/100000UL..400000UL, default 100000UL
 #else
 bool LiquidCrystal_I2C::begin(uint8_t lcd_colums, uint8_t lcd_rows, lcd_font_size f_size)
 {

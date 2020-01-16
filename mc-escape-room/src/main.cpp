@@ -18,7 +18,7 @@ void initialise_lcd(void) {
       uint8_t address = LCD_ADDRESSES[i];
 
       lcd = new LiquidCrystal_I2C((PCF8574_address) address, 4, 5, 6, 16, 11, 12, 13, 14, POSITIVE);
-      if (lcd->begin(LCD_COLS, LCD_ROWS, LCD_5x8DOTS)) {//, PIN_SDA, PIN_SCL)) {
+      if (lcd->begin(LCD_COLS, LCD_ROWS, LCD_5x8DOTS, PIN_SDA, PIN_SCL)) {
         Serial.print("LCD initialised at 0x");
         Serial.println(address, HEX);
         return;

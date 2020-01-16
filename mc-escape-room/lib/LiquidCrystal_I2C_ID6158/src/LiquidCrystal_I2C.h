@@ -172,7 +172,7 @@ class LiquidCrystal_I2C : public Print
   public:
    LiquidCrystal_I2C(PCF8574_address = PCF8574_ADDR_A21_A11_A01, uint8_t P0 = 4, uint8_t P1 = 5, uint8_t P2 = 6, uint8_t P3 = 16, uint8_t P4 = 11, uint8_t P5 = 12, uint8_t P6 = 13, uint8_t P7 = 14, backlightPolarity = POSITIVE);
  
-   #if defined(ESP8266)
+   #if defined(ESP8266) || defined (ESP32)
    bool begin(uint8_t lcd_colums = 16, uint8_t lcd_rows = 2, lcd_font_size = LCD_5x8DOTS, uint8_t sda = SDA, uint8_t scl = SCL);
    #else
    bool begin(uint8_t lcd_colums = 16, uint8_t lcd_rows = 2, lcd_font_size = LCD_5x8DOTS);
