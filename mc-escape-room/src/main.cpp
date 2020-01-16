@@ -4,8 +4,12 @@
 #include <Keypad.h>
 
 #include "main.h"
+#include "state_code.h"
 
 LiquidCrystal_I2C *lcd;
+Keypad keypad = Keypad( makeKeymap(keys), KEYPAD_ROW_PINS, KEYPAD_COL_PINS, KEYPAD_ROWS, KEYPAD_COLS);
+
+State_Code st_code;
 
 /*
   initialise_lcd()
@@ -38,6 +42,8 @@ void setup() {
 
   initialise_lcd();
 
+  st_code.begin();
+
   Serial.println("Setup complete");
 }
 
@@ -46,11 +52,88 @@ void loop() {
     state_prev = INVALID,
     state_new = INVALID;
   
+  static uint32_t state_last_change = 0;
+  
+  // tracks how many correct digits of the debug sequence
+  // has been entered
+  static uint8_t debug_count = 0;
+  
+  char key = keypad.getKey();
 
+  if (key == debug_sequence[debug_count]) {
+    debug_count++;
+
+    if (debug_count >= DEBUG_SEQUENCE_LENGTH) {
+      state_new = DEBUG_MENU;
+    }
+  }
+  else if (key) {
+    debug_count = 0;
+  }
+
+  switch(state_cur) {
+    case CODE:
+      if (state_prev != state_cur) {
+        lcd->clear();
+        lcd->print("Enter Code: ");
+        lcd->setCursor(0, 1);
+        lcd->print("*: Back, #:Check");
+        st_code.reset();
+      }
+
+      if (key >= '0' && key <= '9') {
+        st_code.add(key);
+      } else if (key == '*') {
+        st_code.del();
+      } else if (key == '#') {
+        if (st_code.check()) {
+          state_new = CODE_CORRECT;
+        } else {
+          state_new = CODE_WRONG;
+        }
+      } else if (state_prev == state_cur) {
+        // no change, just break
+        break;
+      }
+    
+      // update displayed code
+      lcd->setCursor(12, 0);
+      
+      for(byte i = 0; i < MAX_CODE_LENGTH; i++) {
+        if (i < st_code.code_length) {
+          lcd->print(st_code.code[i]);
+        }
+        else {
+          lcd->print(' ');
+        }
+      }
+      break;
+    case CODE_CORRECT:
+      if (state_prev != state_cur) {
+        lcd->setCursor(0, 1);
+        lcd->print("Correct!         ");
+      }
+
+      if ((millis() - state_last_change) > 1000) {
+        state_new = CARD;
+      }
+      break;
+    case CODE_WRONG:
+      if (state_prev != state_cur) {
+        lcd->setCursor(0, 1);
+        lcd->print("Wrong Code!      ");
+      }
+
+      if ((millis() - state_last_change) > 1000) {
+        state_new = CODE;
+      }
+      break;
+  }
 
   state_prev = state_cur;
 
   if (state_new != INVALID) {
     state_cur = state_new;
+    state_last_change = millis();
   }
 }
