@@ -948,5 +948,5 @@ void LiquidCrystal_I2C::setBrightness(uint8_t pin, uint8_t value, backlightPolar
 
   if (polarity == NEGATIVE) value = 255 - value;
 
-  analogWrite(pin, value);
+  // analogWrite(pin, value);
 }
