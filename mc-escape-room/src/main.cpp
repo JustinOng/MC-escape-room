@@ -49,8 +49,9 @@ void setup() {
 
 void loop() {
   static States_t state_cur = CODE,
-    state_prev = INVALID,
-    state_new = INVALID;
+    state_prev = INVALID;
+
+  States_t state_new = INVALID;
   
   static uint32_t state_last_change = 0;
   
