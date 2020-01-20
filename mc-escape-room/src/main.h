@@ -13,8 +13,8 @@ const uint8_t LCD_ADDRESSES[] = {0x27, 0x3F};
 const byte KEYPAD_ROWS = 4;
 const byte KEYPAD_COLS = 3;
 
-byte KEYPAD_ROW_PINS[KEYPAD_ROWS] = {35, 34, 39, 36};
-byte KEYPAD_COL_PINS[KEYPAD_COLS] = {25, 33, 32};
+byte KEYPAD_ROW_PINS[KEYPAD_ROWS] = {36, 39, 34, 35};
+byte KEYPAD_COL_PINS[KEYPAD_COLS] = {32, 33, 25};
 
 char keys[KEYPAD_ROWS][KEYPAD_COLS] = {
   {'1','2','3'},
