@@ -5,11 +5,13 @@
 
 #include "main.h"
 #include "state_code.h"
+#include "state_card.h"
 
 LiquidCrystal_I2C *lcd;
 Keypad keypad = Keypad( makeKeymap(keys), KEYPAD_ROW_PINS, KEYPAD_COL_PINS, KEYPAD_ROWS, KEYPAD_COLS);
 
 State_Code st_code;
+State_Card st_card;
 
 /*
   initialise_lcd()
@@ -126,6 +128,28 @@ void loop() {
       }
 
       if ((millis() - state_last_change) > 1000) {
+        state_new = CODE;
+      }
+      break;
+    case CARD:
+      if (state_prev != state_cur) {
+        lcd->clear();
+        lcd->print("   What's the   ");
+        lcd->setCursor(0, 1);
+        lcd->print("    pattern?    ");
+      }
+
+      if (st_card.check()) {
+        state_new = WIN;
+      }
+      break;
+    case WIN:
+      if (state_prev != state_cur) {
+        lcd->clear();
+        lcd->print("Congratulations!");
+      }
+
+      if (key == '#') {
         state_new = CODE;
       }
       break;
