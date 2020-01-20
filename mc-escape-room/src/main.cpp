@@ -74,6 +74,11 @@ void loop() {
     debug_count = 0;
   }
 
+  if (key) {
+    Serial.print("Key pressed: ");
+    Serial.println(key);
+  }
+
   switch(state_cur) {
     case CODE:
       if (state_prev != state_cur) {
@@ -159,6 +164,19 @@ void loop() {
 
   if (state_new != INVALID) {
     state_cur = state_new;
+
+    Serial.print("Entering state ");
+    switch(state_cur) {
+      case CODE: Serial.println("CODE"); break;
+      case CODE_CORRECT: Serial.println("CODE_CORRECT"); break;
+      case CODE_WRONG: Serial.println("CODE_WRONG"); break;
+      case CARD: Serial.println("CARD"); break;
+      case WIN: Serial.println("WIN"); break;
+      case DEBUG_MENU: Serial.println("DEBUG_MENU"); break;
+      case DEBUG_CODE: Serial.println("DEBUG_CODE"); break;
+      case DEBUG_CARD: Serial.println("DEBUG_CARD"); break;
+      case DEBUG_JUMP: Serial.println("DEBUG_JUMP"); break;
+    }
     state_last_change = millis();
   }
 }
