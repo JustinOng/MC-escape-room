@@ -40,11 +40,19 @@ bool State_Card::check(void) {
 }
 
 State_Card::Reader_State_t State_Card::read_reader(uint8_t i, uint8_t *data) {
-  MFRC522::StatusCode status;
-  byte buf[16];
-  byte buf_size = sizeof(buf);
-
   digitalWrite(RESET_PINS[i], HIGH);
+
+  Reader_State_t st = _read_reader(i, data);
+  
+  digitalWrite(RESET_PINS[i], LOW);
+
+  return st;
+}
+
+State_Card::Reader_State_t State_Card::_read_reader(uint8_t i, uint8_t *data) {
+  MFRC522::StatusCode status;
+  byte buf[18];
+  byte buf_size = sizeof(buf);
 
   mfrc522.PCD_Init(PIN_SS, -1);
   delay(4);
@@ -88,12 +96,20 @@ State_Card::Reader_State_t State_Card::read_reader(uint8_t i, uint8_t *data) {
 
   *data = buf[DATA_INDEX];
 
-  digitalWrite(RESET_PINS[i], LOW);
-
   return OK;
 }
 
 State_Card::Reader_State_t State_Card::write_reader(uint8_t i) {
+  digitalWrite(RESET_PINS[i], HIGH);
+
+  Reader_State_t st = _write_reader(i);
+  
+  digitalWrite(RESET_PINS[i], LOW);
+
+  return st;
+}
+
+State_Card::Reader_State_t State_Card::_write_reader(uint8_t i) {
   MFRC522::StatusCode status;
   byte buf[16] = {0};
   byte buf_size = sizeof(buf);
@@ -138,8 +154,6 @@ State_Card::Reader_State_t State_Card::write_reader(uint8_t i) {
     Serial.println(mfrc522.GetStatusCodeName(status));
     return OP_ERROR;
   }
-
-  digitalWrite(RESET_PINS[i], LOW);
 
   return OK;
 }

@@ -59,6 +59,9 @@ class State_Card {
   private:
     MFRC522::MIFARE_Key key;
     MFRC522 mfrc522;
+    
+    Reader_State_t _read_reader(uint8_t i, uint8_t *data);
+    Reader_State_t _write_reader(uint8_t i);
 };
 
 #endif
