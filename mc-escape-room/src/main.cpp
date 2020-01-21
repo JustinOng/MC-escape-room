@@ -287,9 +287,27 @@ void loop() {
           break;
       }
 
+      if (key == '#') {
+        state_new = DEBUG_CARD_WRITE;
+      } else if (key) {
+        state_new = DEBUG_MENU;
+      }
+
       cur_index++;
 
       if (cur_index >= NUM_MFRC522) cur_index = 0;
+      break;
+    case DEBUG_CARD_WRITE:
+      if (state_prev != state_cur) {
+        lcd->setCursor(0, 1);
+        lcd->print("Writing...      ");
+
+        for(uint8_t i = 0; i < NUM_MFRC522; i++) {
+          st_card.write_reader(i);
+        }
+
+        state_new = DEBUG_CARD;
+      }
       break;
   }
 
@@ -310,6 +328,7 @@ void loop() {
       case DEBUG_CODE_OK: Serial.println("DEBUG_CODE_OK"); break;
       case DEBUG_CODE_BAD: Serial.println("DEBUG_CODE_BAD"); break;
       case DEBUG_CARD: Serial.println("DEBUG_CARD"); break;
+      case DEBUG_CARD_WRITE: Serial.println("DEBUG_CARD_WRITE"); break;
       case DEBUG_JUMP: Serial.println("DEBUG_JUMP"); break;
       case INVALID: Serial.println("INVALID?!"); break;
     }
