@@ -170,6 +170,90 @@ void loop() {
         state_new = CODE;
       }
       break;
+    case DEBUG_MENU:
+      if (state_prev != state_cur) {
+        lcd->clear();
+        lcd->print("DEBUG 1:Code");
+        lcd->setCursor(0, 1);
+        lcd->print("2:Cards 3:Jump");
+      }
+
+      if (key == '1') {
+        state_new = DEBUG_CODE;
+      } else if (key == '2') {
+        state_new = DEBUG_CARD;
+      } else if (key == '3') {
+        state_new = DEBUG_JUMP;
+      } else if (key) {
+        state_new = CODE;
+      }
+      break;
+    case DEBUG_CODE:
+      if (state_prev != state_cur) {
+        lcd->clear();
+        lcd->print("Cur code: ");
+        for (uint8_t i = 0; i < CORRECT_CODE_LENGTH; i++) {
+          lcd->print(st_code.correct_code[i]);
+        }
+        lcd->setCursor(0, 1);
+        lcd->print("New code: ");
+        st_code.reset();
+      }
+
+      if (key >= '0' && key <= '9') {
+        if (st_code.code_length < CORRECT_CODE_LENGTH) {
+          st_code.add(key);
+        }
+      } else if (key == '*') {
+        if (st_code.code_length > 0) {
+          st_code.del();
+        } else {
+          state_new = DEBUG_MENU;
+        }
+      } else if (key == '#') {
+        if (st_code.write_code()) {
+          state_new = DEBUG_CODE_OK;
+        } else {
+          state_new = DEBUG_CODE_BAD;
+        }
+      } else if (state_prev == state_cur) {
+        // no change, just break
+        break;
+      }
+    
+      // update displayed code
+      lcd->setCursor(10, 1);
+      
+      for(byte i = 0; i < CORRECT_CODE_LENGTH; i++) {
+        if (i < st_code.code_length) {
+          lcd->print(st_code.code[i]);
+        }
+        else {
+          lcd->print(' ');
+        }
+      }
+
+      break;
+    case DEBUG_CODE_OK:
+      if (state_prev != state_cur) {
+        lcd->setCursor(0, 1);
+        lcd->print("Code updated!");
+      }
+
+      if ((millis() - state_last_change) > 1000) {
+        state_new = DEBUG_CODE;
+      }
+      break;
+    case DEBUG_CODE_BAD:
+      if (state_prev != state_cur) {
+        lcd->setCursor(0, 1);
+        lcd->print("Update failed!");
+      }
+
+      if ((millis() - state_last_change) > 1000) {
+        state_new = DEBUG_CODE;
+      }
+      break;
   }
 
   state_prev = state_cur;
@@ -186,8 +270,11 @@ void loop() {
       case WIN: Serial.println("WIN"); break;
       case DEBUG_MENU: Serial.println("DEBUG_MENU"); break;
       case DEBUG_CODE: Serial.println("DEBUG_CODE"); break;
+      case DEBUG_CODE_OK: Serial.println("DEBUG_CODE_OK"); break;
+      case DEBUG_CODE_BAD: Serial.println("DEBUG_CODE_BAD"); break;
       case DEBUG_CARD: Serial.println("DEBUG_CARD"); break;
       case DEBUG_JUMP: Serial.println("DEBUG_JUMP"); break;
+      case INVALID: Serial.println("INVALID?!"); break;
     }
     state_last_change = millis();
   }

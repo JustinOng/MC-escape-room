@@ -19,10 +19,13 @@ class State_Code {
   
     uint8_t code_length = 0;
     char code[MAX_CODE_LENGTH];
+
+    char correct_code[CORRECT_CODE_LENGTH] = {0};
+
+    bool write_code(void);
   
   private:
     Preferences prefs;
-    char correct_code[CORRECT_CODE_LENGTH] = {0};
 
     void read_code(void);
 };

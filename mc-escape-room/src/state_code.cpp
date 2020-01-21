@@ -46,3 +46,18 @@ void State_Code::read_code(void) {
   }
   Serial.println();
 }
+
+bool State_Code::write_code(void) {
+  if (code_length != CORRECT_CODE_LENGTH) return 0;
+
+  prefs.putBytes(PREFERENCE_NAME, code, CORRECT_CODE_LENGTH);
+
+  Serial.print("Wrote code to preferences: ");
+  for (uint8_t i = 0; i < CORRECT_CODE_LENGTH; i++) {
+    Serial.printf("%02X ", code[i]);
+  }
+
+  memcpy(&correct_code, &code, CORRECT_CODE_LENGTH);
+
+  return 1;
+}
