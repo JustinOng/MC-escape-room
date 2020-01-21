@@ -254,6 +254,43 @@ void loop() {
         state_new = DEBUG_CODE;
       }
       break;
+    case DEBUG_CARD:
+      // index of the mfrc522 to read
+      static uint8_t cur_index = 0;
+
+      if (state_prev != state_cur) {
+        lcd->clear();
+        lcd->print("Reader states:");
+        lcd->setCursor(0, 1);
+        lcd->print("Readers: ");
+      }
+
+      byte data;
+
+      lcd->setCursor(10+cur_index, 1);
+      switch(st_card.read_reader(cur_index, &data)) {
+        case State_Card::NO_READER:
+          lcd->print('!');
+          break;
+        case State_Card::NO_CARD:
+          lcd->print('?');
+          break;
+        case State_Card::NO_DATA:
+          lcd->print('-');
+          break;
+        case State_Card::AUTH_ERROR:
+        case State_Card::OP_ERROR:
+          lcd->print('E');
+          break;
+        case State_Card::OK:
+          lcd->print(data);
+          break;
+      }
+
+      cur_index++;
+
+      if (cur_index >= NUM_MFRC522) cur_index = 0;
+      break;
   }
 
   state_prev = state_cur;
