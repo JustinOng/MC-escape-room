@@ -27,12 +27,14 @@ void State_Code::del(void) {
 
 bool State_Code::check(void) {
   Serial.print("Checking code: ");
-  for (uint8_t i = 0; i < CORRECT_CODE_LENGTH; i++) {
+  for (uint8_t i = 0; i < code_length; i++) {
     Serial.printf("%02X ", code[i]);
   }
   Serial.println();
 
-  return memcmp(code, correct_code, CORRECT_CODE_LENGTH) == 0;
+  if (code_length != CORRECT_CODE_LENGTH) return 0;
+
+  return memcmp(code, correct_code, code_length) == 0;
 }
 
 void State_Code::read_code(void) {
