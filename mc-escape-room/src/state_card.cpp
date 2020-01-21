@@ -1,7 +1,7 @@
 #include <SPI.h>
 #include "state_card.h"
 
-void State_Card::begin(void) {
+byte State_Card::begin(void) {
   for (uint8_t i = 0; i < 6; i++) key.keyByte[i] = 0xFF;
 
   for(uint8_t i = 0; i < NUM_MFRC522; i++) {
@@ -22,8 +22,16 @@ void State_Card::begin(void) {
     delay(4);
     mfrc522.PCD_DumpVersionToSerial();
 
+    char version = mfrc522.PCD_ReadRegister(MFRC522::VersionReg);
+
     digitalWrite(RESET_PINS[i], LOW);
+
+    if (version == 0x00 || version == 0xFF) {
+      return i+1;
+    }
   }
+
+  return 0;
 }
 
 bool State_Card::check(void) {

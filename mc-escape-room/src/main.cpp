@@ -40,11 +40,23 @@ void initialise_lcd(void) {
 }
 
 void setup() {
+  byte result;
+
   Serial.begin(115200);
 
   initialise_lcd();
 
   st_code.begin();
+
+  result = st_card.begin();
+  if (result > 0) {
+    lcd->clear();
+    lcd->print("Reader ");
+    lcd->print(result);
+    lcd->setCursor(0, 1);
+    lcd->print("failed to init");
+    while(1);
+  }
 
   Serial.println("Setup complete");
 }

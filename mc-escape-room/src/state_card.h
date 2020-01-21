@@ -51,7 +51,7 @@ class State_Card {
       OP_ERROR
     };
 
-    void begin(void);
+    byte begin(void);
     bool check(void);
     Reader_State_t read_reader(uint8_t i, uint8_t *data);
     Reader_State_t write_reader(uint8_t i);
