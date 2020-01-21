@@ -58,6 +58,8 @@ void setup() {
     while(1);
   }
 
+  pinMode(PIN_DRIVE, OUTPUT);
+
   Serial.println("Setup complete");
 }
 
@@ -74,6 +76,8 @@ void loop() {
   static uint8_t debug_count = 0;
   
   char key = keypad.getKey();
+
+  digitalWrite(PIN_DRIVE, state_cur == WIN);
 
   if (key == debug_sequence[debug_count]) {
     debug_count++;

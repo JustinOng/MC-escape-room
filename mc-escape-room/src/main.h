@@ -3,7 +3,8 @@
 
 // === pin config ===
 const uint8_t PIN_SCL = 22,
-  PIN_SDA = 23;
+  PIN_SDA = 23,
+  PIN_DRIVE = 27;
 
 // === config for LCD ===
 const uint8_t LCD_COLS = 16, LCD_ROWS = 2;
