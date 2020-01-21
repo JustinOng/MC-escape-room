@@ -10,6 +10,8 @@ void State_Card::begin(void) {
     digitalWrite(RESET_PINS[i], LOW);
   }
 
+  SPI.begin(PIN_SCK, PIN_MISO, PIN_MOSI, PIN_SS);
+
   for(uint8_t i = 0; i < NUM_MFRC522; i++) {
     Serial.print("Initialising reader ");
     Serial.println(i);
@@ -22,8 +24,6 @@ void State_Card::begin(void) {
 
     digitalWrite(RESET_PINS[i], LOW);
   }
-
-  SPI.begin(PIN_SCK, PIN_MISO, PIN_MOSI, PIN_SS);
 }
 
 bool State_Card::check(void) {
