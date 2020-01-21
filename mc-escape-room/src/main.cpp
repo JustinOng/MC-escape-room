@@ -309,6 +309,28 @@ void loop() {
         state_new = DEBUG_CARD;
       }
       break;
+    case DEBUG_JUMP:
+      if (state_prev != state_cur) {
+        lcd->clear();
+        lcd->print("JUMP-1: Code");
+        lcd->setCursor(0, 1);
+        lcd->print("2: Cards 3: Win");
+      }
+
+      if (key == '1') {
+        state_new = CODE;
+      } else if (key == '2') {
+        state_new = CARD;
+      } else if (key == '3') {
+        state_new = WIN;
+      } else if (key) {
+        state_new = DEBUG_MENU;
+      }
+
+      break;
+    case INVALID:
+      state_new = CARD;
+      break;
   }
 
   state_prev = state_cur;
