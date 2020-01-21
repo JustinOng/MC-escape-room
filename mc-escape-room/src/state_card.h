@@ -5,7 +5,7 @@
 #include <MFRC522.h>
 
 const uint8_t NUM_MFRC522 = 6;
-const uint8_t RESET_PINS[NUM_MFRC522] = {5, 18, 19, 14, 12, 13};
+const uint8_t RESET_PINS[NUM_MFRC522] = {5, 18, 19, 14, 15, 13};
 
 const uint8_t PIN_SCK = 17;
 const uint8_t PIN_MOSI = 16;
