@@ -32,7 +32,7 @@ bool State_Code::check(void) {
   }
   Serial.println();
 
-  return memcmp(code, correct_code, CORRECT_CODE_LENGTH);
+  return memcmp(code, correct_code, CORRECT_CODE_LENGTH) == 0;
 }
 
 void State_Code::read_code(void) {
