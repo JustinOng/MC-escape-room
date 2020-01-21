@@ -40,7 +40,7 @@ bool State_Card::check(void) {
   for (uint8_t i = 0; i < NUM_MFRC522; i++) {
     if (read_reader(i, &data) != OK) return false;
 
-    if (data != i) return false;
+    if (data != (i+1)) return false;
   }
 
   return true;
